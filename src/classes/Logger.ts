@@ -10,6 +10,7 @@ export class Logger {
   private lastLogTimestamps: Map<string, number> = new Map();
   private outputTarget: ILogger = new ConsoleLogger();
   private rateLimitSeconds = 10;
+  private outputTargets: ILogger[] = [];
   private constructor() {}
 
   public static getInstance(): Logger {
@@ -38,15 +39,15 @@ export class Logger {
     return true;
   }
 
-  private log(level: LogLevel, message: string): void {
-    if (!this.shouldLog(level, message)) {
-      return;
-    }
-    const key = `${level}-${message}`;
-    const entry = new LogEntry(new Date(), message, level);
+  private log(level: LogLevel, msg: string) {
+    if (!this.shouldLog(level, msg)) return;
+
+    const entry = new LogEntry(new Date(), msg, level);
     this.logs.push(entry);
-    const finalMessage = `[${entry.timestamp.toISOString()}] ${message}`;
-    this.outputTarget.log(level, finalMessage);
+
+    for (const target of this.outputTargets) {
+      target.log(level, msg);
+    }
   }
 
   info(msg: string) {
@@ -67,5 +68,13 @@ export class Logger {
 
   getAllLogs(): LogEntry[] {
     return [...this.logs];
+  }
+
+  addOutputTarget(target: ILogger) {
+    this.outputTargets.push(target);
+  }
+
+  clearOutputTargets() {
+    this.outputTargets = [];
   }
 }

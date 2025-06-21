@@ -1,0 +1,5 @@
+[INFO] System started
+[DEBUG] Loading user preferences
+[WARN] Low disk space
+[ERROR] Failed to connect to database
+[INFO] System started

@@ -1,22 +1,35 @@
 import { Logger } from "./classes/Logger";
 import { ConsoleLogger } from "./strategy/ConsoleLogger";
+import { FileLogger } from "./strategy/FileLogger";
+import { MemoryLogger } from "./strategy/MemoryLogger";
 
 const logger = Logger.getInstance();
+logger.clearOutputTargets();
 
-logger.setOutputStrategy(new ConsoleLogger());
-logger.setRateLimit(5);
+const consoleLogger = new ConsoleLogger();
+const memoryLogger = new MemoryLogger();
+const fileLogger = new FileLogger("logs.txt");
 
-logger.info("User signed in");
-logger.debug("Fetching user profile");
-logger.warn("Cache miss for user ID 42");
-logger.error("Database connection failed");
+logger.addOutputTarget(consoleLogger);
+logger.addOutputTarget(memoryLogger);
+logger.addOutputTarget(fileLogger);
+
+logger.setRateLimit(3);
+
+logger.info("System started");
+logger.debug("Loading user preferences");
+logger.warn("Low disk space");
+logger.error("Failed to connect to database");
 
 setTimeout(() => {
-  logger.info("User signed in");
+  logger.info("System started");
 }, 2000);
 
 setTimeout(() => {
-  logger.info("User signed in");
-}, 6000);
+  logger.info("System started");
+}, 4000);
 
-logger.info("User signed out");
+setTimeout(() => {
+  console.log("\n🧠 Memory Logs:");
+  console.log(memoryLogger.getLogs());
+}, 5000);
